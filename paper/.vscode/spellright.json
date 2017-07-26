@@ -1,0 +1,25 @@
+//
+// Spell Right workspace configuration file.
+//
+{
+    "language": "en",
+    "documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ],
+    "groupDictionaries": true,
+    "statusBarIndicator": true,
+    "suggestionsInHints": true,
+    "ignoreWords": [
+        "lastaccessed",
+        "url",
+        "@formatdoi",
+        "desc"
+    ],
+    "ignoreRegExps": [],
+    "ignoreFiles": [
+        "**/.gitignore",
+        "**/.spellignore"
+    ]
+}
