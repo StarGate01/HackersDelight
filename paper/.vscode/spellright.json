@@ -15,7 +15,13 @@
         "lastaccessed",
         "url",
         "@formatdoi",
-        "desc"
+        "desc",
+        "Debian",
+        "aircrack",
+        "Openwall",
+        "deauthentication",
+        "wlan",
+        "airmon"
     ],
     "ignoreRegExps": [],
     "ignoreFiles": [

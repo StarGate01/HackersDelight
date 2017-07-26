@@ -4,7 +4,7 @@ Digital wireless communication has become irreplaceable in our modern informatio
 
 Developments like these do no only lead to a world full of exciting new possibilities, but also to a tremendous amount of new potential security risks. Hackers can and do use the ever-growing amount of unsecure or badly secured wireless networks for their own illicit purposes, such as ordering illegal goods or obscuring their access point, or just surfing the internet for free without paying a service provider to access to their infrastructure.  
 
-The reasons to break into a secured wireless network however do not necessarily have to be illegitimate. In fact, the best way to verify a security concept and implementation is to attack it in a controlled and documented manner --- the art of "Penetration testing".
+The reasons to break into a secured wireless network however do not necessarily have to be illegitimate. In fact, the best way to verify a security concept and implementation is to attack it in a controlled and documented manner --- the art of \emph{Penetration testing}.
 
 \section{Testing setup}
 
@@ -12,35 +12,57 @@ To avoid legal issues, a controlled testing setup was constructed for the purpos
 
 \begin{itemize}
 
-\item{Lenovo Y50-70 \textbf{Laptop} running Kali Linux \cite{Kali17}}
+\item{Lenovo Y50-70 \textbf{Laptop} running Kali Linux \cite{OffSec17} inside a virtual machine}
 
 \item{TP-LINK TL-WN722N \textbf{USB-WiFi antenna}}
 
 \item{TP-LINK TL-WR542G \textbf{wireless router}}
 
-\item{Samsung ATIV-S \textbf{Smartphone}}
+\item{Samsung ATIV-S \textbf{Smartphone} running WP 8.1}
 
 \end{itemize}
 
-A USB antenna was chosen for its extended range, compared to the laptops' integrated Wi-Fi antenna.
+A USB antenna was chosen for its extended range and higher transmitting power, compared to the laptops' integrated Wi-Fi antenna. This is especially important when performing attacks where overshadowing another network is the key to successful attack, as shown in section~\ref{sec:attackuser}.
 
-The operation system "Kali Linux" was chosen for its flexibility and vast collection of pre-installed penetration testing software.
+The operation system \emph{Kali Linux} by \emph{Offensive Security} is a Linux Debian-based system that was initially released in March 2013 as a successor to BackTrack Linux \cite{OffSecDoc17}. Kali Linux was chosen for its flexibility and vast collection of pre-installed penetration testing software.
 
-Any other devices were already owned and available.
+Any other devices were already owned and thus chosen because of their availability.
+
+\subsection{Used software}
+
+Kali Linux provides a massive collection of software, engineered for all kinds of use cases. A few specialized programs were used for the purpose of this research:
+
+\begin{itemize}
+
+\item{\textbf{Aircrack-ng suite} \cite{AirNg17}, capable of using network cards in monitoring mode, capturing packets, decrypting captured traffic and even running active attacks such as deauthentication or packet injection}
+
+\item{\textbf{John the ripper} \cite{Openwall17}, an advanced password-cracking and hash-breaking tool to use with aircrack-ng}
+
+\item{\textbf{Fluxion} \cite{Fluxion17}, a Wi-Fi phishing framework which provides a user-friendly interface and is capable of launching Man-in-the-Middle attacks against WPA network users}
+
+\end{itemize}
+
+\subsection{Wireless adapter configuration}
+
+A Wi-Fi adapter generally can be operated in a multiple distinct modes, \emph{monitor} and \emph{managed} modes. Most household and end-user devices operate in a managed mode, where the networking card acts as a client or access point. In managed mode, the hardware filters the incoming packets before they are forwarded to the operation system. 
+
+Configuring the network card to operate in monitor mode lets the received packets bypass the internal processing unit of the network card and allows the CPU to process the raw packets instead. Also, in monitor mode the network card does not have to be associated to an existing wireless network, making it possible to capture foreign and broken packets or even inject new packets into the network.
+
+Using the above-mentioned aircrack-ng suite, setting the wireless card to monitoring mode can be done by the systems' super user by running
+
+\begin{lstlisting}[basicstyle=\ttfamily]
+airmon start wlan0
+\end{lstlisting}
+
+With \lstinline[basicstyle=\ttfamily]{wlan0} being the desired networking interface. This command will then create an new network interface, \lstinline[basicstyle=\ttfamily]{mon0}, which exposes the monitoring capability.
+
+Not all wireless adapters, drivers and operating systems support using the adapter in monitoring mode. The above configuration has been shown to fulfill all expectations.
 
 \section{Attacking networks}
 
-What is relevant today
+here be dragons
 
-\subsection{Attacking WEP-secured networks}
-
-Theory
-
-Attack
-
-Practice
-
-\subsection{Attacking WPA2-secured networks}
+\subsection{WPS-secured networks}
 
 Theory
 
@@ -48,9 +70,26 @@ Attack
 
 Practice
 
-\subsection{Attacking the user}
+\subsection{WEP-secured networks}
 
-Luckily humans are, compared to computer-based authorization algorithms, rather gullible. 
+Theory
+
+Attack
+
+Practice
+
+\subsection{WPA2-secured networks}
+
+Theory
+
+Attack
+
+Practice
+
+\subsection{Social engineering}
+\label{sec:attackuser}
+
+Humans are, compared to computer-based authorization algorithms, rather gullible. 
 
 Phishing
 
@@ -58,4 +97,32 @@ Social Engineering
 
 \section{Conclusion}
 
-Blab Blab
+Wrapping up, there really is no way to provide 100\% unbreakable wireless network security. However, it is possible to make it extraordinarily hard for an attacker to breach a network. 
+
+This can be done on the technical side by:
+
+\begin{itemize}
+
+\item{Disabeling deprecated protocols like WEP and WPS and upgrading to WPA2}
+
+\item{Picking long and complex pre-shared-keys and passwords}
+
+\item{Keeping the wireless routers' firmware up-to-date}
+
+\item{Restricting physical access to the wireless router}
+
+\end{itemize}
+
+And on the social side by:
+
+\begin{itemize}
+
+\item{Educating users about phishing and social engineering attacks}
+
+\item{Demonstrating attacks to sensitize users to tell-tale signs of such attacks}
+
+\item{Implementing strict password policies}
+
+\item{Using a per-user authentification system}
+
+\end{itemize}

@@ -6,6 +6,8 @@
 \usepackage{booktabs}
 \setcopyright{rightsretained}
 
+\usepackage{listings}
+
 \acmConference[H4CK3RS '17]{Proseminar H4ck3r's D3l1ght}{July 2017}{Garching, Bayern}
 \acmYear{2017}
 \copyrightyear{2017}
@@ -17,7 +19,9 @@
 \email{christoph.honal@tum.de}
 
 \begin{abstract}
-This paper aims to explain and demonstrate how common Wi-Fi (IEEE 802.11) encryption and authorization techniques are vulnerable to attacks, and how it is possible to prevent such attacks from succeeding.
+Common Wi-Fi (IEEE 802.11) authorization protocols such as WEP or WPA2 are vulnerable to several known attacks, which enable a potential hacker to access a wireless network without providing sufficient credentials. This paper aims to provide basic understanding of several commonly used Wi-Fi authorization methods and demonstrate techniques to bypass them, or use social engineering methods to gather password information. 
+
+This is done by using industry-standard software and hardware in a controlled environment, in order to reenact several real-world scenarios. Knowledge gathered from successful attacks is then used to determine ways to further protect wireless networks.
 \end{abstract}
 
 \begin{CCSXML}
