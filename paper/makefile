@@ -8,7 +8,7 @@ SCRFILE = paper.tex
 DEPS = $(wildcard $(SRCDIR)/*.tex)
 TARGET = $(BLDDIR)/$(subst .tex,.pdf,$(SCRFILE))
 
-build: clean $(TARGET)
+build: $(TARGET)
 
 $(TARGET): $(DEPS)
 
