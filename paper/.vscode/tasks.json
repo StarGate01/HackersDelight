@@ -1,0 +1,29 @@
+{
+    "version": "0.1.0",
+    "command": "make",
+    "isShellCommand": true,
+    "args": [],
+    "showOutput": "always",
+    "echoCommand": true,
+    "suppressTaskName": false,
+    "tasks": [
+        {
+            "taskName": "build",
+            "args": [],
+            "isBuildCommand": true
+        },
+        {
+            "taskName": "clean",
+            "args": []
+        },
+        {
+            "taskName": "softclean",
+            "args": []
+        },
+        {
+            "taskName": "forwardsearch",
+            "args": ["LN=${lineNumber}", "LNFILE=${relativeFile}"],
+            "showOutput": "never"
+        }
+    ]
+}

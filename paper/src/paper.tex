@@ -1,0 +1,44 @@
+\documentclass[sigconf]{acmart}
+\makeatletter
+\renewcommand\@formatdoi[1]{\ignorespaces}
+\makeatother
+
+\usepackage{booktabs}
+\setcopyright{rightsretained}
+
+\acmConference[H4CK3RS '17]{Proseminar H4ck3r's D3l1ght}{July 2017}{Garching, Bayern}
+\acmYear{2017}
+\copyrightyear{2017}
+
+\begin{document}
+\title{Hacking Wi-Fi Passwords}
+
+\author{Christoph Honal}
+\email{christoph.honal@tum.de}
+
+\begin{abstract}
+This paper aims to explain and demonstrate how common Wi-Fi (IEEE 802.11) encryption and authorization techniques are vulnerable to attacks, and how it is possible to prevent such attacks from succeeding.
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10002978.10003014.10003017</concept_id>
+<concept_desc>Security and privacy~Mobile and wireless security</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Security and privacy~Mobile and wireless security}
+
+\keywords{Wi-Fi, IEEE 802.11, WPA2, WEP, Phishing}
+
+\maketitle
+
+\input{src/body}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{src/bibliography}
+
+\end{document}
