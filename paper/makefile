@@ -3,9 +3,10 @@
 SRCDIR = src
 BLDDIR = bld
 AUXDIR = tmp
+SVGDIR = svg-inkscape
 
 SCRFILE = paper.tex
-DEPS = $(wildcard $(SRCDIR)/*.tex)
+DEPS = $(wildcard $(SRCDIR)/*.tex $(SRCDIR)/*.bib)
 TARGET = $(BLDDIR)/$(subst .tex,.pdf,$(SCRFILE))
 
 build: $(TARGET)
@@ -24,6 +25,7 @@ forwardsearch:
 
 clean: softclean
 	-rm -rf $(AUXDIR)
+	-rm -rf $(SVGDIR)
 
 softclean:
 	-rm -rf $(BLDDIR)

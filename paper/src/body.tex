@@ -105,13 +105,13 @@ Digit & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \multicolumn{1}{c|}{8} \\ \cline{2-9}
 \end{tabular}
 \end{table}
 
-\subsection{Flawed random number generators}
+\subsection{Flawed random number generator}
 
-Some routers implemented a weak random number generator, which enabled hackers to launch an effective \emph{offline} brute-force attack against captured data from the (failed) WPS PIN handshake~\cite{Bongard14}, called the `Pixiedust' vulnerability.
+Some routers implemented a weak random number generator, which enabled hackers to launch an effective \emph{offline} brute-force attack against captured data from the (failed) WPS PIN handshake~\cite{Bongard14}, called the \emph{Pixiedust} vulnerability.
 
 However, the test device and nearly all devices released within the last few years did not possess this characteristic, so further evaluation was discontinued for the purpose of this research.
 
-\subsection{Attacking with reaver}
+\subsection{Attacking with Reaver}
 
 The \emph{Reaver} password cracker can be used to perform the attack described in Section~\ref{sec:wpsredpin}, after the wireless network adapter has been properly initialized as described in Section~\ref{sec:wificonf}:
 
@@ -119,23 +119,42 @@ The \emph{Reaver} password cracker can be used to perform the attack described i
 reaver -i wlan0mon -c 6 -b 00:19:E0:6E:C4:DE -vv
 \end{lstlisting}
 
-With \lstinline[basicstyle=\ttfamily]{6} being the wireless channel in with the router operates, and \lstinline[basicstyle=\ttfamily]{00:19:E0:6E:C4:DE} the routers' MAC address. This information can be found by using the commands
+With \lstinline[basicstyle=\ttfamily]{6} being the wireless channel in with the router operates, and \lstinline[basicstyle=\ttfamily]{00:19:E0:6E:C4:DE} the routers' MAC address. 
 
-\begin{lstlisting}[basicstyle=\ttfamily]
-wash -i wlan0mon
-\end{lstlisting}
-
-or
-
-\begin{lstlisting}[basicstyle=\ttfamily]
-airodump-ng wlan0mon
-\end{lstlisting}
-
-to scan for wireless access points. Reaver will then brute-force the WPS PIN, and display it when successful.
+This information can be found by scanning the network for wireless access points, for example using \lstinline[basicstyle=\ttfamily]{wash -i wlan0mon} or \lstinline[basicstyle=\ttfamily]{airodump-ng wlan0mon}. Reaver will then brute-force the WPS PIN, and display it when successful. 
 
 Without special mitigation tactics this process can take up to a few hours, or just a few minutes when a \emph{Pixiedust} vulnerability is detected.
 
 \section{WEP-secured networks}
+
+Wired Equivalent Privacy, or \emph{WEP} for short, is a deprecated jet still used Wi-Fi authorization and encryption protocol.
+
+Data is encrypted by XOR-ing it with a pseudorandom stream of data (see Figure~\ref{fig:wepmech}), which is generated using the RC4-Algorithm~\cite{WiFi16}.
+
+The RC4 random number generator is initialized with the concatenation of an 24-bit \emph{Initialization Vector} (IV) and the actual hexadecimal password. The width of the seed can range from 64 to 256 bits in some implementations.
+
+\begin{figure}
+\includesvg{src/img/Wep-crypt-alt.svg}
+\caption{Basic WEP encryption mechanism. From Wikipedia, the free encyclopedia~\cite{BHL07}}\label{fig:wepmech}
+\end{figure}
+
+\subsection{Related-Key vulnerability}
+
+The RC4 random number generator is vulnerable to the \emph{Fluhrer, Mantin and Shamir attack}~\cite{FMS01}.
+
+Using certain generated IVs, an attacker can --- knowing the first byte of the key stream and the first n bytes of a key --- derive the next byte of this key.
+
+To receive enough (a few thousand) IVs, an attacker has to choose a rather busy network and/or collect packets for a long period of time.
+
+This information can then be used to deduce the original key und consequently the password.
+
+\subsection{Increasing the amount of IVs}
+
+% when are iv generated
+% arp
+% arp fuckery
+
+\subsection{Attacking with Aircrack}
 
 \section{WPA2-secured networks}
 
@@ -145,7 +164,7 @@ Attack
 
 Practice
 
-\subsection{Social engineering}\label{sec:attackuser}
+\section{Social engineering}\label{sec:attackuser}
 
 Humans are, compared to computer-based authorization algorithms, rather gullible. 
 
