@@ -5,10 +5,11 @@
 Note: This repository (/paper) is being used with the following software:
 
  - VSCode x64 with
-    - LaTeX Language Support Plugin
+    - LaTeX Workbench Plugin
     - Spell Right Plugin
  - Cygwin with
     - make and associated software
  - MikTex Windows LaTex distribution with
     - ACM templates
     - latexmk compiler
+    - chktex

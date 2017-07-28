@@ -1,3 +1,4 @@
+% !TEX root = paper.tex 
 \section{Motivation and Relevance}
 
 Digital wireless communication has become irreplaceable in our modern information technology and society. Communication is done primarily “on the go” using smartphones instead of cable bound landlines. The trusty Ethernet-port is disappearing in modern ultra-slim notebook computers, instead networks are accessed solely via Wi-Fi (IEEE 802.11). Even some household devices such as fridges or even dishwashers can be connected to the internet via Wi-Fi.
@@ -12,7 +13,7 @@ To avoid legal issues, a controlled testing setup was constructed for the purpos
 
 \begin{itemize}
 
-\item{Lenovo Y50-70 \textbf{Laptop} running Kali Linux \cite{OffSec17} inside a virtual machine}
+\item{Lenovo Y50-70 \textbf{Laptop} running Kali Linux~\cite{OffSec17} inside a virtual machine}
 
 \item{TP-LINK TL-WN722N \textbf{USB-WiFi antenna}}
 
@@ -22,9 +23,9 @@ To avoid legal issues, a controlled testing setup was constructed for the purpos
 
 \end{itemize}
 
-A USB antenna was chosen for its extended range and higher transmitting power, compared to the laptops' integrated Wi-Fi antenna. This is especially important when performing attacks where overshadowing another network is the key to successful attack, as shown in section~\ref{sec:attackuser}.
+A USB antenna was chosen for its extended range and higher transmitting power, compared to the laptops' integrated Wi-Fi antenna. This is especially important when performing attacks where overshadowing another network is the key to successful attack, as shown in Section~\ref{sec:attackuser}.
 
-The operation system \emph{Kali Linux} by \emph{Offensive Security} is a Linux Debian-based system that was initially released in March 2013 as a successor to BackTrack Linux \cite{OffSecDoc17}. Kali Linux was chosen for its flexibility and vast collection of pre-installed penetration testing software.
+The operation system \emph{Kali Linux} by \emph{Offensive Security} is a Linux Debian-based system that was initially released in March 2013 as a successor to BackTrack Linux~\cite{OffSecDoc17}. Kali Linux was chosen for its flexibility and vast collection of pre-installed penetration testing software.
 
 Any other devices were already owned and thus chosen because of their availability.
 
@@ -34,15 +35,17 @@ Kali Linux provides a massive collection of software, engineered for all kinds o
 
 \begin{itemize}
 
-\item{\textbf{Aircrack-ng suite} \cite{AirNg17}, capable of using network cards in monitoring mode, capturing packets, decrypting captured traffic and even running active attacks such as deauthentication or packet injection}
+\item{\textbf{Aircrack-ng suite}~\cite{AirNg17}, capable of using network cards in monitoring mode, capturing packets, decrypting captured traffic and even running active attacks such as deauthentication or packet injection}
 
-\item{\textbf{John the ripper} \cite{Openwall17}, an advanced password-cracking and hash-breaking tool to use with aircrack-ng}
+\item{\textbf{John the ripper}~\cite{Openwall17}, an advanced password-cracking and hash-breaking tool to use with aircrack-ng}
 
-\item{\textbf{Fluxion} \cite{Fluxion17}, a Wi-Fi phishing framework which provides a user-friendly interface and is capable of launching Man-in-the-Middle attacks against WPA network users}
+\item{\textbf{Fluxion}~\cite{Fluxion17}, a WPA phishing framework which provides a user-friendly interface and is capable of launching Man-in-the-Middle attacks}
+
+\item{\textbf{Reaver}~\cite{Reaver17}, a brute-force WPS PIN cracker}
 
 \end{itemize}
 
-\subsection{Wireless adapter configuration}
+\subsection{Wireless adapter configuration}\label{sec:wificonf}
 
 A Wi-Fi adapter generally can be operated in a multiple distinct modes, \emph{monitor} and \emph{managed} modes. Most household and end-user devices operate in a managed mode, where the networking card acts as a client or access point. In managed mode, the hardware filters the incoming packets before they are forwarded to the operation system. 
 
@@ -54,15 +57,87 @@ Using the above-mentioned aircrack-ng suite, setting the wireless card to monito
 airmon start wlan0
 \end{lstlisting}
 
-With \lstinline[basicstyle=\ttfamily]{wlan0} being the desired networking interface. This command will then create an new network interface, \lstinline[basicstyle=\ttfamily]{mon0}, which exposes the monitoring capability.
+With \lstinline[basicstyle=\ttfamily]{wlan0} being the desired networking interface. This command will then create an new network interface, \lstinline[basicstyle=\ttfamily]{wlan0mon}, which exposes the monitoring capability. This can be verified by checking the output of the command \lstinline[basicstyle=\ttfamily]{iwconfig}.
 
 Not all wireless adapters, drivers and operating systems support using the adapter in monitoring mode. The above configuration has been shown to fulfill all expectations.
 
-\section{Attacking networks}
+\section{WPS-secured networks}
 
-here be dragons
+Wi-Fi Protected Setup, or \emph{WPS} for short, is a protocol which aims to simplify the process of adding new devices (hereinafter called \emph{Enrollee}) to a wireless network provided by a wireless router (hereinafter called \emph{Registrar}). 
 
-\subsection{WPS-secured networks}
+Usually, when using a traditional protocols such as WEP or WPA, the user must enter a password in order to authorize a device. WPS on the other hand allows several quick methods to authorize a device~\cite{WiFi11}, all being based on physical access to the router:
+
+\begin{itemize}
+
+\item{Entering a pre-determined eight digit long \textbf{Personal Indentification Number} (PIN) into the new device. This PIN is often printed on the router itself and is comparable to a regular password. 
+
+However, some models possess a vulnerability where the PIN is derived from the routers' MAC address~\cite{Craig14}, which can be sniffed.}
+
+\item{Via the \textbf{Push Button Configuration} (PBC), where pressing a dedicated hardware button on the router allows new connections for two minutes (See Figure~\ref{fig:wpsbutton}). }
+
+\item{Transferring configuration data using a \textbf{USB Flash Drive} (UFD) from the router to the new device.}
+
+\item{Via \textbf{Near Field Communication} (NFC) where data exchange is achieved by close-range electromagnetic induction.}
+
+\end{itemize}
+
+\begin{figure} %[H]
+\includegraphics[width=0.3\textwidth]{src/img/DIR-890L-WPS-Button-windows-8c.jpg}
+\caption{Connecting to a WPS network in Microsoft Windows 8. From D-Link~\cite{DLink14}}\label{fig:wpsbutton}
+\end{figure}
+
+\subsection{Reduced PIN compexity}\label{sec:wpsredpin}
+
+While an eight-digit PIN in itself is already possible to be brute-forced, several flaws in WPS reduce the amount of guesses needed further down~\cite{Ducklin15}. 
+
+Firstly, the last digit of the PIN is a check digit, which can be computed from the other seven. Furthermore, authorization of the enrollee is done in multiple steps~\cite{WiFi06}, in which the enrollee proves possession of the PIN in two stages, one for each half of the PIN (see Table~\ref{tbl:wpskey}).
+
+Because authorization prematurely fails after an invalid first half of the PIN, an attacker only has to guess $10^4 + 10^3$ times assuming the worst case --- as opposed to the original $10^8$ times.
+
+\begin{table}[]
+\centering
+\caption{Composition of a WPS Key}\label{tbl:wpskey}
+\begin{tabular}{l|c|c|c|c|c|c|c|l|}
+\cline{2-9}
+ & \multicolumn{8}{c|}{PIN} \\ \cline{2-9} 
+Digit & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \multicolumn{1}{c|}{8} \\ \cline{2-9} 
+ & \multicolumn{4}{c|}{First half} & \multicolumn{3}{c|}{Second half} & C \\ \cline{2-9} 
+\end{tabular}
+\end{table}
+
+\subsection{Flawed random number generators}
+
+Some routers implemented a weak random number generator, which enabled hackers to launch an effective \emph{offline} brute-force attack against captured data from the (failed) WPS PIN handshake~\cite{Bongard14}, called the `Pixiedust' vulnerability.
+
+However, the test device and nearly all devices released within the last few years did not possess this characteristic, so further evaluation was discontinued for the purpose of this research.
+
+\subsection{Attacking with reaver}
+
+The \emph{Reaver} password cracker can be used to perform the attack described in Section~\ref{sec:wpsredpin}, after the wireless network adapter has been properly initialized as described in Section~\ref{sec:wificonf}:
+
+\begin{lstlisting}[basicstyle=\ttfamily]
+reaver -i wlan0mon -c 6 -b 00:19:E0:6E:C4:DE -vv
+\end{lstlisting}
+
+With \lstinline[basicstyle=\ttfamily]{6} being the wireless channel in with the router operates, and \lstinline[basicstyle=\ttfamily]{00:19:E0:6E:C4:DE} the routers' MAC address. This information can be found by using the commands
+
+\begin{lstlisting}[basicstyle=\ttfamily]
+wash -i wlan0mon
+\end{lstlisting}
+
+or
+
+\begin{lstlisting}[basicstyle=\ttfamily]
+airodump-ng wlan0mon
+\end{lstlisting}
+
+to scan for wireless access points. Reaver will then brute-force the WPS PIN, and display it when successful.
+
+Without special mitigation tactics this process can take up to a few hours, or just a few minutes when a \emph{Pixiedust} vulnerability is detected.
+
+\section{WEP-secured networks}
+
+\section{WPA2-secured networks}
 
 Theory
 
@@ -70,24 +145,7 @@ Attack
 
 Practice
 
-\subsection{WEP-secured networks}
-
-Theory
-
-Attack
-
-Practice
-
-\subsection{WPA2-secured networks}
-
-Theory
-
-Attack
-
-Practice
-
-\subsection{Social engineering}
-\label{sec:attackuser}
+\subsection{Social engineering}\label{sec:attackuser}
 
 Humans are, compared to computer-based authorization algorithms, rather gullible. 
 

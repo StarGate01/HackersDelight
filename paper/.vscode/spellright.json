@@ -20,8 +20,8 @@
         "aircrack",
         "Openwall",
         "deauthentication",
-        "wlan",
-        "airmon"
+        "airmon",
+        "reaver"
     ],
     "ignoreRegExps": [],
     "ignoreFiles": [

@@ -1,0 +1,20 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "latex-workshop.latex.additionalBib": [
+        "src/bibliography.bib"
+    ],
+    "latex-workshop.latex.toolchain": [
+        {
+            "command": "latexmk",
+            "args": [
+                "-output-directory=bld",
+                "-aux-directory=aux",
+                "-pdf",
+                "-synctex=1",
+                "-shell-escape",
+                "-halt-on-error",
+                "%DOC%"
+            ]
+        }
+    ]
+}
