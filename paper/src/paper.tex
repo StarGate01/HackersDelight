@@ -7,9 +7,15 @@
 \setcopyright{rightsretained}
 
 \usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  breaklines=true,
+  breakatwhitespace=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+}
 \usepackage{graphicx}
 \usepackage{float}
-\usepackage{svg}
 
 \acmConference[H4CK3RS '17]{Proseminar H4ck3r's D3l1ght}{July 2017}{Garching, Bayern}
 \acmYear{2017}

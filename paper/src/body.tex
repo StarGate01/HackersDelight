@@ -39,9 +39,13 @@ Kali Linux provides a massive collection of software, engineered for all kinds o
 
 \item{\textbf{John the ripper}~\cite{Openwall17}, an advanced password-cracking and hash-breaking tool to use with aircrack-ng}
 
-\item{\textbf{Fluxion}~\cite{Fluxion17}, a WPA phishing framework which provides a user-friendly interface and is capable of launching Man-in-the-Middle attacks}
+\item{\textbf{Reaver}~\cite{Reaver17}, a brute-force password cracker}
 
-\item{\textbf{Reaver}~\cite{Reaver17}, a brute-force WPS PIN cracker}
+\item{\textbf{Hashcat}~\cite{Steube17}, an advanced rule-based alternative to John the Ripper}
+
+\item{\textbf{Fluxion}~\cite{Fluxion17}, a social engineering script which is capable of launching evil-twin attacks}
+
+\item{\textbf{Wifiphisher}~\cite{Wifiphisher17}, an advanced alternative to Fluxion}
 
 \end{itemize}
 
@@ -53,15 +57,15 @@ Configuring the network card to operate in monitor mode lets the received packet
 
 Using the above-mentioned aircrack-ng suite, setting the wireless card to monitoring mode can be done by the systems' super user by running
 
-\begin{lstlisting}[basicstyle=\ttfamily]
+\begin{lstlisting}
 airmon start wlan0
 \end{lstlisting}
 
-With \lstinline[basicstyle=\ttfamily]{wlan0} being the desired networking interface. This command will then create an new network interface, \lstinline[basicstyle=\ttfamily]{wlan0mon}, which exposes the monitoring capability. This can be verified by checking the output of the command \lstinline[basicstyle=\ttfamily]{iwconfig}.
+With \lstinline{wlan0} being the desired networking interface. This command will then create an new network interface, \lstinline{wlan0mon}, which exposes the monitoring capability. This can be verified by checking the output of the command \lstinline{iwconfig}.
 
 Not all wireless adapters, drivers and operating systems support using the adapter in monitoring mode. The above configuration has been shown to fulfill all expectations.
 
-\section{WPS-secured networks}
+\section{Wi-Fi Protected Setup}\label{sec:wps}
 
 Wi-Fi Protected Setup, or \emph{WPS} for short, is a protocol which aims to simplify the process of adding new devices (hereinafter called \emph{Enrollee}) to a wireless network provided by a wireless router (hereinafter called \emph{Registrar}). 
 
@@ -92,7 +96,7 @@ While an eight-digit PIN in itself is already possible to be brute-forced, sever
 
 Firstly, the last digit of the PIN is a check digit, which can be computed from the other seven. Furthermore, authorization of the enrollee is done in multiple steps~\cite{WiFi06}, in which the enrollee proves possession of the PIN in two stages, one for each half of the PIN (see Table~\ref{tbl:wpskey}).
 
-Because authorization prematurely fails after an invalid first half of the PIN, an attacker only has to guess $10^4 + 10^3$ times assuming the worst case --- as opposed to the original $10^8$ times.
+Because authorization prematurely fails after an invalid first half of the PIN, an attacker only has to guess \(10^4 + 10^3\) times assuming the worst case --- as opposed to the original \(10^8\) times.
 
 \begin{table}[]
 \centering
@@ -111,21 +115,21 @@ Some routers implemented a weak random number generator, which enabled hackers t
 
 However, the test device and nearly all devices released within the last few years did not possess this characteristic, so further evaluation was discontinued for the purpose of this research.
 
-\subsection{Attacking with Reaver}
+\subsection{Attacking with Reaver}\label{sec:reaver}
 
 The \emph{Reaver} password cracker can be used to perform the attack described in Section~\ref{sec:wpsredpin}, after the wireless network adapter has been properly initialized as described in Section~\ref{sec:wificonf}:
 
-\begin{lstlisting}[basicstyle=\ttfamily]
+\begin{lstlisting}
 reaver -i wlan0mon -c 6 -b 00:19:E0:6E:C4:DE -vv
 \end{lstlisting}
 
-With \lstinline[basicstyle=\ttfamily]{6} being the wireless channel in with the router operates, and \lstinline[basicstyle=\ttfamily]{00:19:E0:6E:C4:DE} the routers' MAC address. 
+With \lstinline{6} being the wireless channel in with the router operates, and \lstinline{00:19:E0:6E:C4:DE} the routers' MAC address. 
 
-This information can be found by scanning the network for wireless access points, for example using \lstinline[basicstyle=\ttfamily]{wash -i wlan0mon} or \lstinline[basicstyle=\ttfamily]{airodump-ng wlan0mon}. Reaver will then brute-force the WPS PIN, and display it when successful. 
+This information can be found by scanning the network for wireless access points, for example using \lstinline{wash -i wlan0mon} or \lstinline{airodump-ng wlan0mon}. Reaver will then brute-force the WPS PIN, and display it when successful. 
 
 Without special mitigation tactics this process can take up to a few hours, or just a few minutes when a \emph{Pixiedust} vulnerability is detected.
 
-\section{WEP-secured networks}
+\section{Wired Equivalent Privacy}
 
 Wired Equivalent Privacy, or \emph{WEP} for short, is a deprecated jet still used Wi-Fi authorization and encryption protocol.
 
@@ -134,7 +138,7 @@ Data is encrypted by XOR-ing it with a pseudorandom stream of data (see Figure~\
 The RC4 random number generator is initialized with the concatenation of an 24-bit \emph{Initialization Vector} (IV) and the actual hexadecimal password. The width of the seed can range from 64 to 256 bits in some implementations.
 
 \begin{figure}
-\includesvg{src/img/Wep-crypt-alt.svg}
+\includegraphics[width=0.4\textwidth]{src/img/Wep-crypt-alt.png}
 \caption{Basic WEP encryption mechanism. From Wikipedia, the free encyclopedia~\cite{BHL07}}\label{fig:wepmech}
 \end{figure}
 
@@ -142,35 +146,167 @@ The RC4 random number generator is initialized with the concatenation of an 24-b
 
 The RC4 random number generator is vulnerable to the \emph{Fluhrer, Mantin and Shamir attack}~\cite{FMS01}.
 
-Using certain generated IVs, an attacker can --- knowing the first byte of the key stream and the first n bytes of a key --- derive the next byte of this key.
+Exploiting this flaw using certain generated IVs, an attacker can --- knowing the first byte of the key stream and the first n bytes of a key --- derive the next byte of this key.
 
 To receive enough (a few thousand) IVs, an attacker has to choose a rather busy network and/or collect packets for a long period of time.
 
-This information can then be used to deduce the original key und consequently the password.
+The recoded IVs can then be used to deduce the original key und consequently the password.
 
 \subsection{Increasing the amount of IVs}
 
-% when are iv generated
-% arp
-% arp fuckery
+The router can be provoked to send a massive amounts of packages by spamming it with ARP requests, to which the router is obliged to answer.
 
-\subsection{Attacking with Aircrack}
+Newer models counteract this by strategically stalling replies when an ARP flooding is detected.
 
-\section{WPA2-secured networks}
+\subsection{Attacking with Aircrack}\label{sec:wepcrack}
 
-Theory
+Using the \emph{Aircrack} software suite, it is possible to break into a WEP secured network as discussed above. After the wireless adapter has been properly initialized (see Section~\ref{sec:wificonf}), an a taget router has been identified, a background process record all received packets into a log file:
 
-Attack
+\begin{lstlisting}
+airodump-ng -c 6 --essid enigma -w logfile_name wlan0mon
+\end{lstlisting}
 
-Practice
+Here, the \lstinline{c} and \lstinline{essid} flags specify the wireless channel and access point SSID, similar to the attack in Section~\ref{sec:reaver}.
+
+In parallel, the attacker prepares an \emph{ARP-replay attack} by first performing a \emph{fake authentification} via the \emph{WEP open system authentification}, where any device can pair with the router without actually being allowed to access the internet~\cite{WiFi16}:
+
+\begin{lstlisting}
+aireplay-ng -1 0 -e enigma -a 00:19:E0:6E:C4:DE -h 18:D6:C7:0C:76:B8 wlan0mon
+\end{lstlisting}
+
+The \lstinline{e} flag to specify the SSID is optional when same is not hidden.
+
+After successfully associating the attackers' MAC address (specified via the \lstinline{h} flag), the attacker waits for a legitimate ARP packet to be sent, and then sends massive amounts of copies to the router (often with rates of several hundred packets per second):
+
+\begin{lstlisting}
+aireplay-ng -3 -b 00:19:E0:6E:C4:DE -h 18:D6:C7:0C:76:B8 wlan0mon
+\end{lstlisting}
+
+This causes the router to retransmit every ARP response with a new IV --- dramatically reducing the time needed for sufficient package capture down to a few minutes.
+
+Using the captured package data, the attacker can then deduce the original password offline:
+
+\begin{lstlisting}
+aircrack-ng logfile_name.cap
+\end{lstlisting}
+
+This process is very fast and requires usually a few ten thousand different IVs.
+
+\section{Wi-Fi Protected Access}
+
+Faced with the serious security vulnerabilities in WEP, the Wi-Fi Alliance came up with \emph{Wi-Fi Protected Access} (WPA) in 2003 and its successor \emph{WPA2} in 2004.
+
+The most commonly used protocol, WPA2-PSK, uses a \emph{pre-shared key} (PSK) to validate potential new devices. This is done by entering a user determined password.
+
+As of today (July 2017), there a no publicly known effective technical attacks against WPA2-PSK other than determining the key by brute force.
+
+\subsection{Four-way handshake}\label{sec:wpa2handshake}
+
+WPA2-PSK uses a four-way handshake (see Figure~\ref{fig:wpa2fway}) to mutually verify knowledge of the password without actually disclosing it to each other~\cite{WiFi16}. Note that this technique is similar to WPS PIN-based authorization (see Section~\ref{sec:wps}), done in a more secure manner.
+
+Because the actual password is only used during the authorization, an attacker has to record a handshake and then try to crack it.
+
+\subsection{Deauthentication attack}\label{sec:deauth}
+
+When sending fake deauthentication packets to the router and simultaneously spoofing their own MAC address (using the one of their victim), the wireless router logs off the victim.
+
+The attacker then just has to wait for he victim to reconnect (which often happen automatically) and record the handshake.
+
+\begin{figure}
+\includegraphics[width=0.4\textwidth]{src/img/4-way-handshake.png}
+\caption{The four-way handshake of WPA2-PSK. From Wikipedia, the free encyclopedia~\cite{Mikm07}}\label{fig:wpa2fway}
+\end{figure}
+
+\subsection{Attacking with brute force}\label{sec:wpa2brute}
+
+To perform the attack described above, an attacker first logs all packets using a background process as demonstrated in Section~\ref{sec:wepcrack} after having the wireless adapter properly initialized (see Section~\ref{sec:wificonf}).
+
+Meanwhile the \lstinline{aireplay} software is used to send a fake deauthentication message:
+
+\begin{lstlisting}
+aireplay-ng -0 1 -a 00:19:E0:6E:C4:DE -c C4:88:E5:90:98:84 wlan0mon
+\end{lstlisting}
+
+Here the \lstinline{a} flag specifies the MAC address of the wireless router, while the \lstinline{c} flag specifies the victims' MAC address.
+
+The background packet logging process will then signal the capture of a WPA2 handshake.
+
+Using a list of commonly used passwords, a so-called \emph{rainbow table}, the attacker can then start to try out keys.
+
+\begin{lstlisting}
+aircrack-ng -w wordlist.txt -b 00:19:E0:6E:C4:DE logfile_name.cap
+\end{lstlisting}
+
+The success and duration of this method strongly depend on the quality of the chosen password list.
+
+However, it is possible to use auxiliary software to generate commonly used passwords. Using the program \emph{Jack the ripper}, the attacker can automate the process of password guessing:
+
+\begin{lstlisting}
+john --stdout --incremental:LowerNum | aircrack-ng -w -- -b 00:19:E0:6E:C4:DE logfile_name.cap
+\end{lstlisting}
+
+In this example, the generator incrementally creates alphanumerical passwords and then redirects its output to the password testing utility. On the virtualized testing system, it was possible to test about 3000 keys on average per second.
+
+Using this estimate, testing all possible simple 10-letter alphanumeric keys would take about \(8.9\) \emph{million} years (assuming 26 letters, two cases and ten digits):
+
+\begin{displaymath}
+\frac{(26 * 2 + 10)^{10}}{3000\frac{k}{s}}\approx2.8*10^{14} s
+\end{displaymath}
+
+This shows that the key to fast password recovery is intelligent guessing. Software like \emph{Hashcat}~\cite{Steube17} for example is able to test passwords based on complex rules and user-supplied keywords.
+
+Especially when combined with previously obtained personal information about the victim, this technique reduces the password guessing time dramatically.
 
 \section{Social engineering}\label{sec:attackuser}
 
-Humans are, compared to computer-based authorization algorithms, rather gullible. 
+When attempting to break into WPA2-PSK networks, even the best password guessing algorithm and an extreme fast and parallel computing platform are no match to a long and complex (or even random) password (see Section~\ref{sec:wpa2brute}).
 
-Phishing
+Humans users are however, compared to computer-based authorization algorithms, rather gullible. 
 
-Social Engineering
+\emph{Social engineering} is the act of acquiring protected information not by purely technical hacking, but by social means like tricking inexperienced users into revealing passwords, or finding sticky notes in the trash.
+
+\subsection{Evil twin phishing attack}\label{sec:eviltwin}
+
+A commonly used and rather effective method to acquire a WPA2 password works by tricking a user into revealing it to the attacker.
+
+This is done by suppressing and posing as the original wireless router as shown in Figure~\ref{fig:eviltwin}, called an \emph{evil twin attack}.
+
+\begin{figure}
+\includegraphics[width=0.5\textwidth]{src/img/38_1.jpg}
+\caption{Evil twin attack. From Hackinsight~\cite{Hackinsight14}}\label{fig:eviltwin}
+\end{figure}
+
+After successfully having lured the victim into trusting the fake access point, the attacker then presents the victim with a website where the WPA key is to be entered, allegedly to re-access the network.
+
+On the technical side this is done in several steps:
+
+\begin{enumerate}
+
+\item{Scanning for access points and potential victims}
+
+\item{Setting up a virtual access point on the attackers' system using a free wireless channel}
+
+\item{Deauthenticating the victim (see Section~\ref{sec:deauth})}
+
+\item{Jamming the old wireless channel by continuing to deauthenticatenew clients, threfore forcing the victim to connect to the attackers' access point}
+
+\item{Modifying DNS lookups by running a custom DNS server to redirect the victim to a login prompt}
+
+\item{Providing a login prompt via HTTP}
+
+\item{Capturing the entered passsword}
+
+\item{\textbf{Optional:} Validating the entered password by testing it against a previously captured WPA2 four-way handshake (see Section~\ref{sec:wpa2handshake})}
+
+\item{Shutting down all fake systems}
+
+\end{enumerate}
+
+Though it is possible to do all these steps by hand, several software utilities were developed to automate this process, two of them being \emph{Fluxion}~\cite{Fluxion17} and \emph{Wifiphisher}~\cite{Wifiphisher17}, which both provide a command-line based interface.
+
+Crucial to the success of this phishing attack is the credibility of the displayed password prompt and the good faith of the victim. 
+
+If the wireless routers' model is known, one possible way to feign credibility is to fake a firmware update legitimation prompt. In a hotel or similar institution network, faking the regular login page can also yield the wanted results.
 
 \section{Conclusion}
 
@@ -180,9 +316,11 @@ This can be done on the technical side by:
 
 \begin{itemize}
 
-\item{Disabeling deprecated protocols like WEP and WPS and upgrading to WPA2}
+\item{Disabeling deprecated protocols like WEP and WPS and upgrading to WPA2-PSK}
 
-\item{Picking long and complex pre-shared-keys and passwords}
+\item{Using a per-user authentification system}
+
+\item{Picking long and complex pre-shared keys and passwords}
 
 \item{Keeping the wireless routers' firmware up-to-date}
 
@@ -194,12 +332,10 @@ And on the social side by:
 
 \begin{itemize}
 
+\item{Implementing strict password policies}
+
 \item{Educating users about phishing and social engineering attacks}
 
 \item{Demonstrating attacks to sensitize users to tell-tale signs of such attacks}
-
-\item{Implementing strict password policies}
-
-\item{Using a per-user authentification system}
 
 \end{itemize}

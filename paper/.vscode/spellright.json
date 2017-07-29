@@ -21,7 +21,8 @@
         "Openwall",
         "deauthentication",
         "airmon",
-        "reaver"
+        "reaver",
+        "attemtich"
     ],
     "ignoreRegExps": [],
     "ignoreFiles": [
