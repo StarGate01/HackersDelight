@@ -22,7 +22,19 @@
         "deauthentication",
         "airmon",
         "reaver",
-        "attemtich"
+        "attemtich",
+        "basicstyle",
+        "fullflexible",
+        "breaklines",
+        "breakatwhitespace",
+        "postbreak",
+        "tex",
+        "wlan",
+        "airodump",
+        "aireplay",
+        "logfile",
+        "essid",
+        "stdout"
     ],
     "ignoreRegExps": [],
     "ignoreFiles": [

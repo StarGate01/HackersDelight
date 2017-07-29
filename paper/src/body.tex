@@ -13,7 +13,7 @@ To avoid legal issues, a controlled testing setup was constructed for the purpos
 
 \begin{itemize}
 
-\item{Lenovo Y50-70 \textbf{Laptop} running Kali Linux~\cite{OffSec17} inside a virtual machine}
+\item{Lenovo Y50--70 \textbf{Laptop} Computer running Kali Linux~\cite{OffSec17} inside a virtual machine}
 
 \item{TP-LINK TL-WN722N \textbf{USB-WiFi antenna}}
 
@@ -160,7 +160,7 @@ Newer models counteract this by strategically stalling replies when an ARP flood
 
 \subsection{Attacking with Aircrack}\label{sec:wepcrack}
 
-Using the \emph{Aircrack} software suite, it is possible to break into a WEP secured network as discussed above. After the wireless adapter has been properly initialized (see Section~\ref{sec:wificonf}), an a taget router has been identified, a background process record all received packets into a log file:
+Using the \emph{Aircrack} software suite, it is possible to break into a WEP secured network as discussed above. After the wireless adapter has been properly initialized (see Section~\ref{sec:wificonf}), an a target router has been identified, a background process record all received packets into a log file:
 
 \begin{lstlisting}
 airodump-ng -c 6 --essid enigma -w logfile_name wlan0mon
@@ -214,7 +214,7 @@ The attacker then just has to wait for he victim to reconnect (which often happe
 
 \begin{figure}
 \includegraphics[width=0.4\textwidth]{src/img/4-way-handshake.png}
-\caption{The four-way handshake of WPA2-PSK. From Wikipedia, the free encyclopedia~\cite{Mikm07}}\label{fig:wpa2fway}
+\caption{The four-way handshake of WPA2-PSK\@. From Wikipedia, the free encyclopedia~\cite{Mikm07}}\label{fig:wpa2fway}
 \end{figure}
 
 \subsection{Attacking with brute force}\label{sec:wpa2brute}
@@ -250,7 +250,7 @@ In this example, the generator incrementally creates alphanumerical passwords an
 Using this estimate, testing all possible simple 10-letter alphanumeric keys would take about \(8.9\) \emph{million} years (assuming 26 letters, two cases and ten digits):
 
 \begin{displaymath}
-\frac{(26 * 2 + 10)^{10}}{3000\frac{k}{s}}\approx2.8*10^{14} s
+\frac{{(26 * 2 + 10)}^{10}}{3000\frac{k}{s}}\approx2.8*10^{14} s
 \end{displaymath}
 
 This shows that the key to fast password recovery is intelligent guessing. Software like \emph{Hashcat}~\cite{Steube17} for example is able to test passwords based on complex rules and user-supplied keywords.
@@ -276,9 +276,9 @@ This is done by suppressing and posing as the original wireless router as shown 
 \caption{Evil twin attack. From Hackinsight~\cite{Hackinsight14}}\label{fig:eviltwin}
 \end{figure}
 
-After successfully having lured the victim into trusting the fake access point, the attacker then presents the victim with a website where the WPA key is to be entered, allegedly to re-access the network.
+After successfully having lured the victim into trusting the fake access point, the attacker then presents the victim with a website where the network password is to be entered, allegedly to re-access the network.
 
-On the technical side this is done in several steps:
+The attack takes course in several steps:
 
 \begin{enumerate}
 
@@ -288,7 +288,9 @@ On the technical side this is done in several steps:
 
 \item{Deauthenticating the victim (see Section~\ref{sec:deauth})}
 
-\item{Jamming the old wireless channel by continuing to deauthenticatenew clients, threfore forcing the victim to connect to the attackers' access point}
+\item{Jamming the old wireless channel by continuing to deauthenticate new clients, threfore forcing the victim to connect to the attackers' access point}
+
+\item{Handling DHCP for the victim and adjusting firewall restrictions}
 
 \item{Modifying DNS lookups by running a custom DNS server to redirect the victim to a login prompt}
 
@@ -296,13 +298,13 @@ On the technical side this is done in several steps:
 
 \item{Capturing the entered passsword}
 
-\item{\textbf{Optional:} Validating the entered password by testing it against a previously captured WPA2 four-way handshake (see Section~\ref{sec:wpa2handshake})}
+\item{\textbf{Optional:} Validating the entered password by testing it against a previously captured WPA2 four-way handshake (see Section~\ref{sec:wpa2handshake})}\label{item:checkpw}
 
-\item{Shutting down all fake systems}
+\item{Shutting down all fake systems, or re-prompting for a password when Step~\ref{item:checkpw} fails}
 
 \end{enumerate}
 
-Though it is possible to do all these steps by hand, several software utilities were developed to automate this process, two of them being \emph{Fluxion}~\cite{Fluxion17} and \emph{Wifiphisher}~\cite{Wifiphisher17}, which both provide a command-line based interface.
+Though it is possible to perform all these steps by hand, several software utilities were developed to automate this process, two of them being \emph{Fluxion}~\cite{Fluxion17} and \emph{Wifiphisher}~\cite{Wifiphisher17}, which both provide a command-line based interface.
 
 Crucial to the success of this phishing attack is the credibility of the displayed password prompt and the good faith of the victim. 
 
